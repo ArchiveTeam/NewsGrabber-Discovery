@@ -1,7 +1,8 @@
 import os
 import time
+import subprocess
 
-import service
+import discoveryservice
 import settings
 import irc
 import log
@@ -11,7 +12,13 @@ import tools
 def main():
     if os.path.isfile('UPDATE'):
         os.remove('UPDATE')
-
+    if os.system('service rsync status') != 0:
+        print('rsync not running; attempting to start')
+        try:
+            os.system('service rsync start')
+        except OSError:
+            print('failed to start rsync service')
+            os.system('service rsync status')
     settings.init()
     settings.logger = log.Log(settings.log_file_name)
     settings.logger.daemon = True
@@ -27,10 +34,10 @@ def main():
     settings.irc_bot.daemon = True
     settings.irc_bot.start()
     time.sleep(30)
-    settings.upload = service.Upload()
+    settings.upload = discoveryservice.Upload()
     settings.upload.daemon = True
     settings.upload.start()
-    settings.run_services = service.RunServices()
+    settings.run_services = discoveryservice.RunServices()
     settings.run_services.daemon = True
     settings.run_services.start()
     

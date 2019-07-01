@@ -1,10 +1,7 @@
 import os
 import json
+import importlib
 import sys
-
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 
 class File(object):
 
